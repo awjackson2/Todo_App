@@ -77,6 +77,7 @@ export default function XPBar({ completedTasks, currentXP, onXPUpdate }: Props) 
   const [lastCompletedCount, setLastCompletedCount] = useState(completedTasks.length);
   const [gainedXP, setGainedXP] = useState(0);
   const [lastXPBreakdown, setLastXPBreakdown] = useState<{ base: number; workload: number; responsiveness: number; multiplier: number } | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [badgeEffects, setBadgeEffects] = useState({
     color: '#8B7D6B',
     glow: false,
@@ -97,8 +98,11 @@ export default function XPBar({ completedTasks, currentXP, onXPUpdate }: Props) 
 
   // Initialize lastCompletedCount when component mounts
   useEffect(() => {
-    setLastCompletedCount(completedTasks.length);
-  }, []);
+    if (!isInitialized) {
+      setLastCompletedCount(completedTasks.length);
+      setIsInitialized(true);
+    }
+  }, [completedTasks.length, isInitialized]);
 
   // Generate badge effects based on level (deterministic)
   useEffect(() => {
@@ -156,8 +160,8 @@ export default function XPBar({ completedTasks, currentXP, onXPUpdate }: Props) 
         // Size based on level (grows with level)
         newEffects.size = 0.8 + (level / 50) + pseudoRandom(4.7) * 0.4;
         
-        // Rotation based on level
-        newEffects.rotation = (level * 23.5 + pseudoRandom(5.9) * 360) % 360;
+        // No permanent rotation - only during animations
+        newEffects.rotation = 0;
         
         // All effects active for major changes
         newEffects.glow = true;
@@ -181,7 +185,7 @@ export default function XPBar({ completedTasks, currentXP, onXPUpdate }: Props) 
           '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'
         ];
         
-        // Color selection based on level
+        // Color selection based on level - more conservative for lower levels
         let colorIndex;
         if (level >= 20) {
           colorIndex = Math.floor(pseudoRandom(6.1) * colors.length);
@@ -190,7 +194,8 @@ export default function XPBar({ completedTasks, currentXP, onXPUpdate }: Props) 
         } else if (level >= 5) {
           colorIndex = Math.floor(pseudoRandom(8.7) * 8);
         } else {
-          colorIndex = Math.floor(pseudoRandom(9.1) * 4);
+          // For levels 1-4, stick to the first 2 neutral colors
+          colorIndex = Math.floor(pseudoRandom(9.1) * 2);
         }
         newEffects.color = colors[colorIndex];
         
@@ -210,11 +215,20 @@ export default function XPBar({ completedTasks, currentXP, onXPUpdate }: Props) 
           newEffects.pulse = pseudoRandom(18.7) > 0.2;
         }
         
-        // Size based on level (subtle growth)
-        newEffects.size = 1 + (level / 100) + pseudoRandom(19.1) * 0.1;
+        // Size based on level (subtle growth) - more conservative for lower levels
+        if (level >= 20) {
+          newEffects.size = 1 + (level / 100) + pseudoRandom(19.1) * 0.1;
+        } else if (level >= 10) {
+          newEffects.size = 1 + (level / 150) + pseudoRandom(19.1) * 0.05;
+        } else if (level >= 5) {
+          newEffects.size = 1 + (level / 200) + pseudoRandom(19.1) * 0.03;
+        } else {
+          // For levels 1-4, keep size very close to normal
+          newEffects.size = 1 + (level / 300) + pseudoRandom(19.1) * 0.02;
+        }
         
-        // Rotation based on level
-        newEffects.rotation = (level * 7.3 + pseudoRandom(20.3) * 20) % 360;
+        // No permanent rotation - only during animations
+        newEffects.rotation = 0;
       }
       
       return newEffects;
@@ -225,7 +239,7 @@ export default function XPBar({ completedTasks, currentXP, onXPUpdate }: Props) 
 
   // Calculate XP when tasks are completed
   useEffect(() => {
-    if (completedTasks.length > lastCompletedCount) {
+    if (isInitialized && completedTasks.length > lastCompletedCount) {
       const newTasks = completedTasks.slice(lastCompletedCount);
       const xpCalculations = newTasks.map(task => calculateTaskXP(task));
       const newXP = xpCalculations.reduce((total, calc) => total + calc.totalXP, 0);
@@ -247,7 +261,7 @@ export default function XPBar({ completedTasks, currentXP, onXPUpdate }: Props) 
         }, 2000);
       }
     }
-  }, [completedTasks, lastCompletedCount, currentXP, onXPUpdate]);
+  }, [completedTasks, lastCompletedCount, currentXP, onXPUpdate, isInitialized]);
 
   const progressPercentage = (xpInLevel / xpToNext) * 100;
 

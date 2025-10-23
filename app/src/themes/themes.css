@@ -1,0 +1,91 @@
+/* Theme-specific CSS overrides */
+
+/* Ocean Theme */
+[data-theme="ocean"] {
+  --color-primary: #0066cc;
+  --color-secondary: #4a90e2;
+  --color-accent: #ff6b6b;
+}
+
+[data-theme="ocean"][data-bs-theme="dark"] {
+  --color-primary: #4a90e2;
+  --color-secondary: #0066cc;
+  --color-accent: #ff6b6b;
+  --color-bg-primary: #0a1929;
+  --color-bg-secondary: #1a2332;
+  --color-text-primary: #e2e8f0;
+  --color-text-secondary: #cbd5e0;
+  --color-border: #2d3748;
+}
+
+/* Forest Theme */
+[data-theme="forest"] {
+  --color-primary: #2d5016;
+  --color-secondary: #4a7c59;
+  --color-accent: #8b4513;
+}
+
+[data-theme="forest"][data-bs-theme="dark"] {
+  --color-primary: #68d391;
+  --color-secondary: #4a7c59;
+  --color-accent: #8b4513;
+  --color-bg-primary: #0f1419;
+  --color-bg-secondary: #1a202c;
+  --color-text-primary: #e2e8f0;
+  --color-text-secondary: #cbd5e0;
+  --color-border: #2d3748;
+}
+
+/* Sunset Theme */
+[data-theme="sunset"] {
+  --color-primary: #ff6b35;
+  --color-secondary: #f7931e;
+  --color-accent: #8e44ad;
+}
+
+[data-theme="sunset"][data-bs-theme="dark"] {
+  --color-primary: #ff8c42;
+  --color-secondary: #f7931e;
+  --color-accent: #8e44ad;
+  --color-bg-primary: #1a0d2e;
+  --color-bg-secondary: #2d1b69;
+  --color-text-primary: #f7fafc;
+  --color-text-secondary: #e2e8f0;
+  --color-border: #4a5568;
+}
+
+/* Cosmic Theme */
+[data-theme="cosmic"] {
+  --color-primary: #6a0572;
+  --color-secondary: #a8e6cf;
+  --color-accent: #ffd93d;
+}
+
+[data-theme="cosmic"][data-bs-theme="dark"] {
+  --color-primary: #a8e6cf;
+  --color-secondary: #6a0572;
+  --color-accent: #ffd93d;
+  --color-bg-primary: #0a0a1a;
+  --color-bg-secondary: #1a1a2e;
+  --color-text-primary: #e2e8f0;
+  --color-text-secondary: #cbd5e0;
+  --color-border: #2d3748;
+}
+
+/* Royal Theme */
+[data-theme="royal"] {
+  --color-primary: #4b0082;
+  --color-secondary: #9370db;
+  --color-accent: #ffd700;
+}
+
+[data-theme="royal"][data-bs-theme="dark"] {
+  --color-primary: #ffd700;
+  --color-secondary: #9370db;
+  --color-accent: #4b0082;
+  --color-bg-primary: #1a0d2e;
+  --color-bg-secondary: #2d1b69;
+  --color-text-primary: #f7fafc;
+  --color-text-secondary: #e2e8f0;
+  --color-border: #4a5568;
+}

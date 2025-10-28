@@ -65,9 +65,11 @@ export default function TaskTimeline({ tasks, completedTasks }: Props) {
     const dates = allTasks.map(task => task.dueDate);
     const minDate = new Date(Math.min(...dates.map(d => d.getTime())));
     const maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
+    const today = new Date();
     
-    // Add some padding
-    const padding = (maxDate.getTime() - minDate.getTime()) * 0.1;
+    // Always stretch to include all tasks with minimal padding
+    const padding = (maxDate.getTime() - minDate.getTime()) * 0.05; // 5% padding
+    
     return {
       start: new Date(minDate.getTime() - padding),
       end: new Date(maxDate.getTime() + padding)
@@ -103,8 +105,8 @@ export default function TaskTimeline({ tasks, completedTasks }: Props) {
     const range = timelineRange.end.getTime() - timelineRange.start.getTime();
     const days = Math.ceil(range / (24 * 60 * 60 * 1000));
     
-    // Show markers for every few days depending on range
-    const step = Math.max(1, Math.floor(days / 8));
+    // Show markers for every few days depending on range, but ensure we have enough markers
+    const step = Math.max(1, Math.floor(days / 12)); // More markers for better visibility
     
     for (let i = 0; i <= days; i += step) {
       const date = new Date(timelineRange.start.getTime() + i * 24 * 60 * 60 * 1000);
@@ -119,7 +121,20 @@ export default function TaskTimeline({ tasks, completedTasks }: Props) {
       });
     }
     
-    return markers;
+    // Always include today if it's not already included
+    const todayPosition = getDatePosition(today);
+    const hasToday = markers.some(marker => marker.isToday);
+    if (!hasToday && todayPosition >= 0 && todayPosition <= 100) {
+      markers.push({
+        date: today,
+        position: todayPosition,
+        isToday: true,
+        label: formatDate(today)
+      });
+    }
+    
+    // Sort markers by position
+    return markers.sort((a, b) => a.position - b.position);
   }, [timelineRange]);
 
   if (allTasks.length === 0) {

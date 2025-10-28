@@ -860,3 +860,267 @@ html[data-theme="royal"] body[data-bs-theme="dark"] #app {
 [data-theme="royal"] .quote-card:hover {
   border-color: var(--color-primary) !important;
 }
+
+/* Theme-specific time analysis panel styling */
+[data-theme="default"] .time-item {
+  background: var(--color-bg-secondary) !important;
+  border-color: var(--color-accent) !important;
+}
+
+[data-theme="default"] .time-value {
+  color: var(--color-primary) !important;
+}
+
+[data-theme="ocean"] .time-item {
+  background: var(--color-bg-secondary) !important;
+  border-color: var(--color-orange) !important;
+}
+
+[data-theme="ocean"] .time-value {
+  color: var(--color-orange) !important;
+}
+
+[data-theme="forest"] .time-item {
+  background: var(--color-bg-secondary) !important;
+  border-color: var(--color-accent) !important;
+}
+
+[data-theme="forest"] .time-value {
+  color: var(--color-primary) !important;
+}
+
+[data-theme="sunset"] .time-item {
+  background: var(--color-bg-secondary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+[data-theme="sunset"] .time-value {
+  color: var(--color-primary) !important;
+}
+
+[data-theme="cosmic"] .time-item {
+  background: var(--color-bg-secondary) !important;
+  border-color: var(--color-accent) !important;
+}
+
+[data-theme="cosmic"] .time-value {
+  color: var(--color-accent) !important;
+}
+
+[data-theme="royal"] .time-item {
+  background: var(--color-bg-secondary) !important;
+  border-color: var(--color-accent) !important;
+}
+
+[data-theme="royal"] .time-value {
+  color: var(--color-accent) !important;
+}
+
+/* Theme-specific timeline tooltip styling */
+[data-theme="default"] .timeline-tooltip {
+  background: var(--color-bg-tertiary) !important;
+  color: var(--color-text-primary) !important;
+  border: 1px solid var(--color-accent) !important;
+}
+
+[data-theme="default"] .timeline-tooltip::after {
+  border-top-color: var(--color-bg-tertiary) !important;
+}
+
+[data-theme="ocean"] .timeline-tooltip {
+  background: var(--color-bg-tertiary) !important;
+  color: var(--color-text-primary) !important;
+  border: 1px solid var(--color-orange) !important;
+}
+
+[data-theme="ocean"] .timeline-tooltip::after {
+  border-top-color: var(--color-bg-tertiary) !important;
+}
+
+[data-theme="forest"] .timeline-tooltip {
+  background: var(--color-bg-tertiary) !important;
+  color: var(--color-text-primary) !important;
+  border: 1px solid var(--color-accent) !important;
+}
+
+[data-theme="forest"] .timeline-tooltip::after {
+  border-top-color: var(--color-bg-tertiary) !important;
+}
+
+[data-theme="sunset"] .timeline-tooltip {
+  background: var(--color-bg-tertiary) !important;
+  color: var(--color-text-primary) !important;
+  border: 1px solid var(--color-primary) !important;
+}
+
+[data-theme="sunset"] .timeline-tooltip::after {
+  border-top-color: var(--color-bg-tertiary) !important;
+}
+
+[data-theme="cosmic"] .timeline-tooltip {
+  background: var(--color-bg-tertiary) !important;
+  color: var(--color-text-primary) !important;
+  border: 1px solid var(--color-accent) !important;
+}
+
+[data-theme="cosmic"] .timeline-tooltip::after {
+  border-top-color: var(--color-bg-tertiary) !important;
+}
+
+[data-theme="royal"] .timeline-tooltip {
+  background: var(--color-bg-tertiary) !important;
+  color: var(--color-text-primary) !important;
+  border: 1px solid var(--color-accent) !important;
+}
+
+[data-theme="royal"] .timeline-tooltip::after {
+  border-top-color: var(--color-bg-tertiary) !important;
+}
+
+/* Theme-specific timeline marker styling */
+[data-theme="default"] .marker-label {
+  color: var(--color-text-secondary) !important;
+}
+
+[data-theme="default"] .marker-line {
+  background-color: var(--color-accent) !important;
+}
+
+[data-theme="ocean"] .marker-label {
+  color: var(--color-text-secondary) !important;
+}
+
+[data-theme="ocean"] .marker-line {
+  background-color: var(--color-orange) !important;
+}
+
+[data-theme="forest"] .marker-label {
+  color: var(--color-text-secondary) !important;
+}
+
+[data-theme="forest"] .marker-line {
+  background-color: var(--color-accent) !important;
+}
+
+[data-theme="sunset"] .marker-label {
+  color: var(--color-text-secondary) !important;
+}
+
+[data-theme="sunset"] .marker-line {
+  background-color: var(--color-primary) !important;
+}
+
+[data-theme="cosmic"] .marker-label {
+  color: var(--color-text-secondary) !important;
+}
+
+[data-theme="cosmic"] .marker-line {
+  background-color: var(--color-accent) !important;
+}
+
+[data-theme="royal"] .marker-label {
+  color: var(--color-text-secondary) !important;
+}
+
+[data-theme="royal"] .marker-line {
+  background-color: var(--color-accent) !important;
+}
+
+/* Theme-specific timeline marker badge styling */
+[data-theme="default"] .marker-label {
+  background: var(--color-bg-secondary) !important;
+  border-color: var(--color-accent) !important;
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme="ocean"] .marker-label {
+  background: var(--color-bg-secondary) !important;
+  border-color: var(--color-orange) !important;
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme="forest"] .marker-label {
+  background: var(--color-bg-secondary) !important;
+  border-color: var(--color-accent) !important;
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme="sunset"] .marker-label {
+  background: var(--color-bg-secondary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme="cosmic"] .marker-label {
+  background: var(--color-bg-secondary) !important;
+  border-color: var(--color-accent) !important;
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme="royal"] .marker-label {
+  background: var(--color-bg-secondary) !important;
+  border-color: var(--color-accent) !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* Theme-specific today marker styling */
+[data-theme="default"] .timeline-marker.today .marker-line {
+  background: var(--color-primary) !important;
+}
+
+[data-theme="default"] .timeline-marker.today .marker-label {
+  background: var(--color-primary) !important;
+  color: var(--color-bg-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+[data-theme="ocean"] .timeline-marker.today .marker-line {
+  background: var(--color-orange) !important;
+}
+
+[data-theme="ocean"] .timeline-marker.today .marker-label {
+  background: var(--color-orange) !important;
+  color: var(--color-bg-primary) !important;
+  border-color: var(--color-orange) !important;
+}
+
+[data-theme="forest"] .timeline-marker.today .marker-line {
+  background: var(--color-primary) !important;
+}
+
+[data-theme="forest"] .timeline-marker.today .marker-label {
+  background: var(--color-primary) !important;
+  color: var(--color-bg-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+[data-theme="sunset"] .timeline-marker.today .marker-line {
+  background: var(--color-primary) !important;
+}
+
+[data-theme="sunset"] .timeline-marker.today .marker-label {
+  background: var(--color-primary) !important;
+  color: var(--color-bg-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+[data-theme="cosmic"] .timeline-marker.today .marker-line {
+  background: var(--color-accent) !important;
+}
+
+[data-theme="cosmic"] .timeline-marker.today .marker-label {
+  background: var(--color-accent) !important;
+  color: var(--color-bg-primary) !important;
+  border-color: var(--color-accent) !important;
+}
+
+[data-theme="royal"] .timeline-marker.today .marker-line {
+  background: var(--color-accent) !important;
+}
+
+[data-theme="royal"] .timeline-marker.today .marker-label {
+  background: var(--color-accent) !important;
+  color: var(--color-bg-primary) !important;
+  border-color: var(--color-accent) !important;
+}
+

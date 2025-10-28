@@ -44,7 +44,7 @@ export const themes: Theme[] = [
   {
     id: 'default',
     name: 'Classic',
-    description: 'The original warm design',
+    description: 'Cozy earth tones for a comfortable experience',
     levelRequired: 1,
     colors: {
       light: {
@@ -81,13 +81,13 @@ export const themes: Theme[] = [
   {
     id: 'ocean',
     name: 'Ocean Depths',
-    description: 'Deep blue waters and coral accents',
+    description: 'Dive into calming blues with vibrant orange highlights 🌊',
     levelRequired: 5,
     colors: {
       light: {
         primary: '#0066cc',
         secondary: '#4a90e2',
-        accent: '#ff6b6b',
+        accent: '#ff8c42',
         background: '#e8f4fd',
         surface: '#d1e7f5',
         text: '#1a365d',
@@ -101,7 +101,7 @@ export const themes: Theme[] = [
       dark: {
         primary: '#4a90e2',
         secondary: '#0066cc',
-        accent: '#ff6b6b',
+        accent: '#ff8c42',
         background: '#0a1929',
         surface: '#1a2332',
         text: '#e2e8f0',
@@ -118,7 +118,7 @@ export const themes: Theme[] = [
   {
     id: 'forest',
     name: 'Forest Guardian',
-    description: 'Rich greens and earth tones',
+    description: 'Embrace nature with organic greens and earth 🌲',
     levelRequired: 10,
     colors: {
       light: {
@@ -155,7 +155,7 @@ export const themes: Theme[] = [
   {
     id: 'sunset',
     name: 'Sunset Dreams',
-    description: 'Warm oranges and purples',
+    description: 'Bask in warm oranges and majestic purples 🌅',
     levelRequired: 15,
     colors: {
       light: {
@@ -192,7 +192,7 @@ export const themes: Theme[] = [
   {
     id: 'cosmic',
     name: 'Cosmic Explorer',
-    description: 'Deep space and nebula colors',
+    description: 'Journey through space with vibrant nebula colors 🌌',
     levelRequired: 20,
     colors: {
       light: {
@@ -229,7 +229,7 @@ export const themes: Theme[] = [
   {
     id: 'royal',
     name: 'Royal Purple',
-    description: 'Luxurious purples and golds',
+    description: 'Indulge in luxurious purples with golden accents 👑',
     levelRequired: 25,
     colors: {
       light: {

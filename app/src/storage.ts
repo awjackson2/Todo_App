@@ -5,7 +5,7 @@ import {
   onSnapshot,
   serverTimestamp 
 } from 'firebase/firestore';
-import { db, auth } from './firebase';
+import { db } from './firebase';
 import type { Task, Quote } from './types';
 
 // Helper to get user document reference
@@ -250,6 +250,62 @@ export async function removePinnedQuote(quoteId: string): Promise<void> {
   } catch (error) {
     console.error('Error removing pinned quote:', error);
   }
+}
+
+// Theme Settings Functions
+export async function getThemeSettings(): Promise<{ themeId: string; isDarkMode: boolean }> {
+  try {
+    const userDoc = getUserDoc();
+    const docSnap = await getDoc(userDoc);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      return {
+        themeId: data.themeId || 'default',
+        isDarkMode: data.isDarkMode || false
+      };
+    }
+    return { themeId: 'default', isDarkMode: false };
+  } catch (error) {
+    console.error('Error getting theme settings:', error);
+    return { themeId: 'default', isDarkMode: false };
+  }
+}
+
+export async function saveThemeSettings(themeId: string, isDarkMode: boolean): Promise<void> {
+  try {
+    const userDoc = getUserDoc();
+    await setDoc(userDoc, {
+      themeId: themeId,
+      isDarkMode: isDarkMode,
+      lastUpdated: serverTimestamp()
+    }, { merge: true });
+    console.log('Theme settings saved successfully to Firebase');
+  } catch (error) {
+    console.error('Error saving theme settings:', error);
+  }
+}
+
+// Real-time listener for theme settings
+export function subscribeToThemeSettings(callback: (themeId: string, isDarkMode: boolean) => void): () => void {
+  const userDoc = getUserDoc();
+  console.log('Setting up real-time subscription for theme settings:', userDoc.path);
+  
+  return onSnapshot(userDoc, (snapshot) => {
+    console.log('Theme settings update received:', snapshot.exists());
+    if (snapshot.exists()) {
+      const data = snapshot.data();
+      const themeId = data.themeId || 'default';
+      const isDarkMode = data.isDarkMode || false;
+      console.log('Theme settings:', { themeId, isDarkMode });
+      callback(themeId, isDarkMode);
+    } else {
+      console.log('No theme settings in Firebase document');
+      callback('default', false);
+    }
+  }, (error) => {
+    console.error('Error listening to theme settings:', error);
+    callback('default', false);
+  });
 }
 
 

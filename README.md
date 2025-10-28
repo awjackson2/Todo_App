@@ -1,6 +1,12 @@
 # Todo App
 
 A modern, responsive todo list application built with React, TypeScript, and Firebase.
+<img width="1280" height="617" alt="light-main-ui" src="https://github.com/user-attachments/assets/3f9df3e5-6c73-49c6-956d-fc9d5afab6e0" />
+<img width="1262" height="611" alt="dark-theme-selector" src="https://github.com/user-attachments/assets/59c03113-2099-4d3e-a3db-5a8324efd906" />
+<img width="510" height="107" alt="dark-xp-bar" src="https://github.com/user-attachments/assets/31019600-b90e-4047-99f5-bab5d9ff3484" />
+<img width="1265" height="585" alt="dark-task-timeline" src="https://github.com/user-attachments/assets/72cec823-4a09-4a64-a221-359fcb54154b" />
+<img width="224" height="131" alt="dark-quote" src="https://github.com/user-attachments/assets/aa3fc60f-486e-4b40-b168-1998a23eef73" />
+<img width="1275" height="583" alt="dark-hall-of-quotes" src="https://github.com/user-attachments/assets/afb87939-99ae-44fd-9388-5df31d8874ff" />
 
 ## Features
 

@@ -94,12 +94,30 @@ export default function TodoPage() {
 
   // Real-time data subscription
   useEffect(() => {
-    const unsubscribe = subscribeToUserData((newTasks, newCompleted) => {
-      setTasks(newTasks);
-      setCompleted(newCompleted);
-    });
+    let isMounted = true;
+    let unsubscribe: (() => void) | null = null;
 
-    return unsubscribe;
+    const setupSubscription = async () => {
+      try {
+        unsubscribe = await subscribeToUserData((newTasks, newCompleted) => {
+          if (isMounted) {
+            setTasks(newTasks);
+            setCompleted(newCompleted);
+          }
+        });
+      } catch (error) {
+        console.error('Failed to set up data subscription:', error);
+      }
+    };
+
+    setupSubscription();
+
+    return () => {
+      isMounted = false;
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, []);
 
 

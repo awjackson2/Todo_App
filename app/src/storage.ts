@@ -5,8 +5,40 @@ import {
   onSnapshot,
   serverTimestamp 
 } from 'firebase/firestore';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { db } from './firebase';
 import type { Task, Quote } from './types';
+
+// Auth initialization promise
+let authReady = false;
+const authReadyPromise = new Promise<void>((resolve) => {
+  const auth = getAuth();
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (user) {
+      authReady = true;
+      resolve();
+      unsubscribe();
+    }
+  });
+
+  setTimeout(() => {
+    if (!authReady) {
+      authReady = true;
+      resolve();
+    }
+  }, 5000);
+});
+
+export async function ensureAuthReady(): Promise<void> {
+  if (authReady) return;
+  return authReadyPromise;
+}
+
+// Helper to check authentication state
+function isUserAuthenticated(): boolean {
+  const auth = getAuth();
+  return auth.currentUser !== null;
+}
 
 // Helper to get user document reference
 function getUserDoc() {
@@ -43,27 +75,31 @@ async function migrateFromIndexedDB(): Promise<void> {
 
 
 // Get all tasks
-export async function getTasks(): Promise<Task[]> {
+async function getTasks_internal(): Promise<Task[]> {
   try {
-    console.log('Getting tasks from Firebase...');
+    if (!isUserAuthenticated()) {
+      console.warn('User not authenticated, returning empty tasks');
+      return [];
+    }
     const userDoc = getUserDoc();
-    console.log('User document path:', userDoc.path);
     const snapshot = await getDoc(userDoc);
     
     if (snapshot.exists()) {
       const data = snapshot.data();
-      console.log('Found tasks in Firebase:', data.tasks?.length || 0, 'tasks');
       return data.tasks || [];
     }
     
-    console.log('No tasks found in Firebase, trying migration...');
-    // Try migration if no data found
     await migrateFromIndexedDB();
     return [];
   } catch (error) {
     console.error('Error getting tasks:', error);
     return [];
   }
+}
+
+export async function getTasks(): Promise<Task[]> {
+  await ensureAuthReady();
+  return getTasks_internal();
 }
 
 // Helper function to clean task data for Firebase
@@ -79,24 +115,34 @@ function cleanTaskForFirebase(task: Task) {
 }
 
 // Save tasks
-export async function saveTasks(tasks: Task[]): Promise<void> {
+async function saveTasks_internal(tasks: Task[]): Promise<void> {
   try {
-    console.log('Saving tasks to Firebase:', tasks.length, 'tasks');
+    if (!isUserAuthenticated()) {
+      console.warn('User not authenticated, cannot save tasks');
+      return;
+    }
     const userDoc = getUserDoc();
-    console.log('User document path:', userDoc.path);
     await setDoc(userDoc, {
       tasks: tasks.map(task => cleanTaskForFirebase(task)),
       lastUpdated: serverTimestamp()
     }, { merge: true });
-    console.log('Tasks saved successfully to Firebase');
   } catch (error) {
     console.error('Error saving tasks:', error);
   }
 }
 
+export async function saveTasks(tasks: Task[]): Promise<void> {
+  await ensureAuthReady();
+  return saveTasks_internal(tasks);
+}
+
 // Get completed tasks
-export async function getCompletedTasks(): Promise<Task[]> {
+async function getCompletedTasks_internal(): Promise<Task[]> {
   try {
+    if (!isUserAuthenticated()) {
+      console.warn('User not authenticated, returning empty completed tasks');
+      return [];
+    }
     const userDoc = getUserDoc();
     const snapshot = await getDoc(userDoc);
     
@@ -110,9 +156,18 @@ export async function getCompletedTasks(): Promise<Task[]> {
   }
 }
 
+export async function getCompletedTasks(): Promise<Task[]> {
+  await ensureAuthReady();
+  return getCompletedTasks_internal();
+}
+
 // Save completed tasks
-export async function saveCompletedTasks(completed: Task[]): Promise<void> {
+async function saveCompletedTasks_internal(completed: Task[]): Promise<void> {
   try {
+    if (!isUserAuthenticated()) {
+      console.warn('User not authenticated, cannot save completed tasks');
+      return;
+    }
     const userDoc = getUserDoc();
     await setDoc(userDoc, {
       completed: completed.map(task => cleanTaskForFirebase(task)),
@@ -123,9 +178,18 @@ export async function saveCompletedTasks(completed: Task[]): Promise<void> {
   }
 }
 
+export async function saveCompletedTasks(completed: Task[]): Promise<void> {
+  await ensureAuthReady();
+  return saveCompletedTasks_internal(completed);
+}
+
 // Save all data at once
-export async function saveAll(tasks: Task[], completed: Task[]): Promise<void> {
+async function saveAll_internal(tasks: Task[], completed: Task[]): Promise<void> {
   try {
+    if (!isUserAuthenticated()) {
+      console.warn('User not authenticated, cannot save data');
+      return;
+    }
     const userDoc = getUserDoc();
     await setDoc(userDoc, {
       tasks: tasks.map(task => cleanTaskForFirebase(task)),
@@ -137,19 +201,24 @@ export async function saveAll(tasks: Task[], completed: Task[]): Promise<void> {
   }
 }
 
-// Real-time listener for live updates (single subscription for both tasks and completed)
-export function subscribeToUserData(callback: (tasks: Task[], completed: Task[]) => void): () => void {
+export async function saveAll(tasks: Task[], completed: Task[]): Promise<void> {
+  await ensureAuthReady();
+  return saveAll_internal(tasks, completed);
+}
+
+// Real-time listener for live updates
+function subscribeToUserData_internal(callback: (tasks: Task[], completed: Task[]) => void): () => void {
+  if (!isUserAuthenticated()) {
+    console.warn('User not authenticated, cannot subscribe to user data');
+    return () => {};
+  }
   const userDoc = getUserDoc();
-  console.log('Setting up real-time subscription for:', userDoc.path);
   
   return onSnapshot(userDoc, (snapshot) => {
-    console.log('Real-time update received:', snapshot.exists());
     if (snapshot.exists()) {
       const data = snapshot.data();
-      console.log('Data from Firebase:', { tasks: data.tasks?.length || 0, completed: data.completed?.length || 0 });
       callback(data.tasks || [], data.completed || []);
     } else {
-      console.log('No data in Firebase document');
       callback([], []);
     }
   }, (error) => {
@@ -158,23 +227,40 @@ export function subscribeToUserData(callback: (tasks: Task[], completed: Task[])
   });
 }
 
+export async function subscribeToUserData(callback: (tasks: Task[], completed: Task[]) => void): Promise<() => void> {
+  await ensureAuthReady();
+  return subscribeToUserData_internal(callback);
+}
+
 // XP System Functions
-export async function saveXPData(xp: number, level: number): Promise<void> {
+async function saveXPData_internal(xp: number, level: number): Promise<void> {
   try {
+    if (!isUserAuthenticated()) {
+      console.warn('User not authenticated, cannot save XP data');
+      return;
+    }
     const userDoc = getUserDoc();
     await setDoc(userDoc, {
       xp: xp,
       level: level,
       lastUpdated: serverTimestamp()
     }, { merge: true });
-    console.log('XP data saved successfully to Firebase');
   } catch (error) {
     console.error('Error saving XP data:', error);
   }
 }
 
-export async function getXPData(): Promise<{ xp: number; level: number }> {
+export async function saveXPData(xp: number, level: number): Promise<void> {
+  await ensureAuthReady();
+  return saveXPData_internal(xp, level);
+}
+
+async function getXPData_internal(): Promise<{ xp: number; level: number }> {
   try {
+    if (!isUserAuthenticated()) {
+      console.warn('User not authenticated, returning default XP data');
+      return { xp: 0, level: 1 };
+    }
     const userDoc = getUserDoc();
     const docSnap = await getDoc(userDoc);
     if (docSnap.exists()) {
@@ -191,9 +277,18 @@ export async function getXPData(): Promise<{ xp: number; level: number }> {
   }
 }
 
+export async function getXPData(): Promise<{ xp: number; level: number }> {
+  await ensureAuthReady();
+  return getXPData_internal();
+}
+
 // Pinned Quotes Functions
-export async function getPinnedQuotes(): Promise<Quote[]> {
+async function getPinnedQuotes_internal(): Promise<Quote[]> {
   try {
+    if (!isUserAuthenticated()) {
+      console.warn('User not authenticated, returning empty quotes');
+      return [];
+    }
     const userDoc = getUserDoc();
     const snapshot = await getDoc(userDoc);
     
@@ -207,35 +302,48 @@ export async function getPinnedQuotes(): Promise<Quote[]> {
   }
 }
 
-export async function savePinnedQuotes(quotes: Quote[]): Promise<void> {
+export async function getPinnedQuotes(): Promise<Quote[]> {
+  await ensureAuthReady();
+  return getPinnedQuotes_internal();
+}
+
+async function savePinnedQuotes_internal(quotes: Quote[]): Promise<void> {
   try {
+    if (!isUserAuthenticated()) {
+      console.warn('User not authenticated, cannot save pinned quotes');
+      return;
+    }
     const userDoc = getUserDoc();
     await setDoc(userDoc, {
       pinnedQuotes: quotes,
       lastUpdated: serverTimestamp()
     }, { merge: true });
-    console.log('Pinned quotes saved successfully to Firebase');
   } catch (error) {
     console.error('Error saving pinned quotes:', error);
   }
 }
 
+export async function savePinnedQuotes(quotes: Quote[]): Promise<void> {
+  await ensureAuthReady();
+  return savePinnedQuotes_internal(quotes);
+}
+
 export async function addPinnedQuote(quote: Omit<Quote, 'id' | 'pinnedAt'>): Promise<void> {
+  await ensureAuthReady();
   try {
-    const existingQuotes = await getPinnedQuotes();
+    const existingQuotes = await getPinnedQuotes_internal();
     const newQuote: Quote = {
       ...quote,
       id: Date.now().toString(),
       pinnedAt: Date.now()
     };
     
-    // Check if quote already exists (by text and author)
     const exists = existingQuotes.some(q => 
       q.text === newQuote.text && q.author === newQuote.author
     );
     
     if (!exists) {
-      await savePinnedQuotes([...existingQuotes, newQuote]);
+      await savePinnedQuotes_internal([...existingQuotes, newQuote]);
     }
   } catch (error) {
     console.error('Error adding pinned quote:', error);
@@ -243,18 +351,23 @@ export async function addPinnedQuote(quote: Omit<Quote, 'id' | 'pinnedAt'>): Pro
 }
 
 export async function removePinnedQuote(quoteId: string): Promise<void> {
+  await ensureAuthReady();
   try {
-    const existingQuotes = await getPinnedQuotes();
+    const existingQuotes = await getPinnedQuotes_internal();
     const filteredQuotes = existingQuotes.filter(q => q.id !== quoteId);
-    await savePinnedQuotes(filteredQuotes);
+    await savePinnedQuotes_internal(filteredQuotes);
   } catch (error) {
     console.error('Error removing pinned quote:', error);
   }
 }
 
 // Theme Settings Functions
-export async function getThemeSettings(): Promise<{ themeId: string; isDarkMode: boolean }> {
+async function getThemeSettings_internal(): Promise<{ themeId: string; isDarkMode: boolean }> {
   try {
+    if (!isUserAuthenticated()) {
+      console.warn('User not authenticated, returning default theme settings');
+      return { themeId: 'default', isDarkMode: false };
+    }
     const userDoc = getUserDoc();
     const docSnap = await getDoc(userDoc);
     if (docSnap.exists()) {
@@ -271,41 +384,58 @@ export async function getThemeSettings(): Promise<{ themeId: string; isDarkMode:
   }
 }
 
-export async function saveThemeSettings(themeId: string, isDarkMode: boolean): Promise<void> {
+export async function getThemeSettings(): Promise<{ themeId: string; isDarkMode: boolean }> {
+  await ensureAuthReady();
+  return getThemeSettings_internal();
+}
+
+async function saveThemeSettings_internal(themeId: string, isDarkMode: boolean): Promise<void> {
   try {
+    if (!isUserAuthenticated()) {
+      console.warn('User not authenticated, cannot save theme settings');
+      return;
+    }
     const userDoc = getUserDoc();
     await setDoc(userDoc, {
       themeId: themeId,
       isDarkMode: isDarkMode,
       lastUpdated: serverTimestamp()
     }, { merge: true });
-    console.log('Theme settings saved successfully to Firebase');
   } catch (error) {
     console.error('Error saving theme settings:', error);
   }
 }
 
-// Real-time listener for theme settings
-export function subscribeToThemeSettings(callback: (themeId: string, isDarkMode: boolean) => void): () => void {
+export async function saveThemeSettings(themeId: string, isDarkMode: boolean): Promise<void> {
+  await ensureAuthReady();
+  return saveThemeSettings_internal(themeId, isDarkMode);
+}
+
+function subscribeToThemeSettings_internal(callback: (themeId: string, isDarkMode: boolean) => void): () => void {
+  if (!isUserAuthenticated()) {
+    console.warn('User not authenticated, cannot subscribe to theme settings');
+    return () => {};
+  }
   const userDoc = getUserDoc();
-  console.log('Setting up real-time subscription for theme settings:', userDoc.path);
   
   return onSnapshot(userDoc, (snapshot) => {
-    console.log('Theme settings update received:', snapshot.exists());
     if (snapshot.exists()) {
       const data = snapshot.data();
       const themeId = data.themeId || 'default';
       const isDarkMode = data.isDarkMode || false;
-      console.log('Theme settings:', { themeId, isDarkMode });
       callback(themeId, isDarkMode);
     } else {
-      console.log('No theme settings in Firebase document');
       callback('default', false);
     }
   }, (error) => {
     console.error('Error listening to theme settings:', error);
     callback('default', false);
   });
+}
+
+export async function subscribeToThemeSettings(callback: (themeId: string, isDarkMode: boolean) => void): Promise<() => void> {
+  await ensureAuthReady();
+  return subscribeToThemeSettings_internal(callback);
 }
 
 

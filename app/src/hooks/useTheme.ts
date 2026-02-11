@@ -11,28 +11,48 @@ export function useTheme() {
   
   // Load theme settings from Firebase on mount
   useEffect(() => {
+    let isMounted = true;
+    let unsubscribe: (() => void) | null = null;
+
     async function loadTheme() {
       try {
         const settings = await getThemeSettings();
-        setCurrentThemeId(settings.themeId);
-        setIsDarkMode(settings.isDarkMode);
+        if (isMounted) {
+          setCurrentThemeId(settings.themeId);
+          setIsDarkMode(settings.isDarkMode);
+        }
       } catch (error) {
         console.error('Error loading theme settings:', error);
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     }
     
     loadTheme();
     
     // Subscribe to real-time theme updates
-    const unsubscribe = subscribeToThemeSettings((themeId, darkMode) => {
-      setCurrentThemeId(themeId);
-      setIsDarkMode(darkMode);
-    });
+    const setupSubscription = async () => {
+      try {
+        unsubscribe = await subscribeToThemeSettings((themeId, darkMode) => {
+          if (isMounted) {
+            setCurrentThemeId(themeId);
+            setIsDarkMode(darkMode);
+          }
+        });
+      } catch (error) {
+        console.error('Error setting up theme subscription:', error);
+      }
+    };
+
+    setupSubscription();
     
     return () => {
-      if (unsubscribe) unsubscribe();
+      isMounted = false;
+      if (unsubscribe) {
+        unsubscribe();
+      }
     };
   }, []);
   

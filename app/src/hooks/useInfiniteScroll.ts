@@ -7,7 +7,7 @@ interface UseInfiniteScrollOptions {
 }
 
 interface UseInfiniteScrollReturn {
-  loadMoreRef: React.RefObject<HTMLDivElement>;
+  loadMoreRef: React.RefObject<HTMLDivElement | null>;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
 }
@@ -37,7 +37,7 @@ export function useInfiniteScroll(
         }
       },
       {
-        rootMargin,
+        rootMargin: `${threshold}px 0px ${threshold}px 0px`,
         threshold: 0.1
       }
     );

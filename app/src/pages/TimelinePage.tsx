@@ -1,10 +1,10 @@
 import { useEffect, useState, useMemo } from 'react';
+import type { ReactNode } from 'react';
 import { Container, Row, Col, Button, Spinner, Card, ProgressBar, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import type { Task } from '../types';
 import { getTasks, getCompletedTasks } from '../storage';
 import TaskTimeline from '../components/TaskTimeline';
-import { useSessionState } from '../hooks/useSessionState';
 import { useTheme } from '../hooks/useTheme';
 
 export default function TimelinePage() {
@@ -13,7 +13,7 @@ export default function TimelinePage() {
   const [completed, setCompleted] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [modalContent, setModalContent] = useState<{ title: string; content: JSX.Element } | null>(null);
+  const [modalContent, setModalContent] = useState<{ title: string; content: ReactNode } | null>(null);
 
   // Load data effect
   useEffect(() => {

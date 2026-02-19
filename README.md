@@ -1,6 +1,6 @@
 # Todo App
 
-A React + TypeScript productivity app for managing tasks, tracking progress, and exploring timeline/quotes views.
+A personal React + TypeScript productivity app I use for managing my tasks, tracking progress, and exploring timeline/quotes views.
 
 ## Quick Start
 

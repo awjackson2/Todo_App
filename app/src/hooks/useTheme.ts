@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { themes, applyTheme, type Theme } from '../themes/themeConfig';
+import { themes, applyTheme } from '../themes/themeConfig';
 import { getThemeSettings, saveThemeSettings, subscribeToThemeSettings } from '../storage';
 
 export function useTheme() {

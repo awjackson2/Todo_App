@@ -7,7 +7,7 @@ interface UseInfiniteScrollOptions {
 }
 
 interface UseInfiniteScrollReturn {
-  loadMoreRef: React.RefObject<HTMLDivElement>;
+  loadMoreRef: React.RefObject<HTMLDivElement | null>;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
 }
@@ -18,7 +18,7 @@ export function useInfiniteScroll(
 ): UseInfiniteScrollReturn {
   const {
     threshold = 100,
-    rootMargin = '0px',
+    rootMargin,
     enabled = true
   } = options;
 
@@ -27,6 +27,8 @@ export function useInfiniteScroll(
 
   useEffect(() => {
     if (!enabled) return;
+
+    const effectiveRootMargin = rootMargin ?? `${threshold}px 0px ${threshold}px 0px`;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -37,7 +39,7 @@ export function useInfiniteScroll(
         }
       },
       {
-        rootMargin,
+        rootMargin: effectiveRootMargin,
         threshold: 0.1
       }
     );
@@ -52,7 +54,7 @@ export function useInfiniteScroll(
         observer.unobserve(currentRef);
       }
     };
-  }, [onLoadMore, enabled, isLoading, rootMargin]);
+  }, [onLoadMore, enabled, isLoading, rootMargin, threshold]);
 
   return {
     loadMoreRef,

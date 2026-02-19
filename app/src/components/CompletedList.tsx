@@ -7,12 +7,6 @@ type Props = {
   onUndo?: (task: Task) => void;
 };
 
-function hashColor(input: string): string {
-  let h = 0;
-  for (let i = 0; i < input.length; i++) h = (h * 31 + input.charCodeAt(i)) | 0;
-  const hue = Math.abs(h) % 360;
-  return `hsl(${hue} 70% 45%)`;
-}
 
 export default function CompletedList({ tasks, onUndo }: Props) {
   if (tasks.length === 0) {

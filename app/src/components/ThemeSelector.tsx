@@ -11,7 +11,6 @@ export default function ThemeSelector({ currentLevel }: Props) {
   const [selectedTheme, setSelectedTheme] = useState('');
   
   const { 
-    currentTheme, 
     currentThemeId, 
     isDarkMode, 
     changeTheme, 

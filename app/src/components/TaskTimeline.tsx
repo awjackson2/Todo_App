@@ -6,6 +6,10 @@ type Props = {
   completedTasks: Task[];
 };
 
+type TimelineTask = Task & {
+  dueDate: Date;
+};
+
 function hashColor(input: string): string {
   let h = 0;
   for (let i = 0; i < input.length; i++) h = (h * 31 + input.charCodeAt(i)) | 0;
@@ -38,12 +42,12 @@ function formatTime(date: Date): string {
 }
 
 export default function TaskTimeline({ tasks, completedTasks }: Props) {
-  const [hoveredTask, setHoveredTask] = useState<Task | null>(null);
+  const [hoveredTask, setHoveredTask] = useState<TimelineTask | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number } | null>(null);
 
   // Combine all tasks and filter those with end dates
   const allTasks = useMemo(() => {
-    const tasksWithEndDates = [...tasks, ...completedTasks]
+    const tasksWithEndDates: TimelineTask[] = [...tasks, ...completedTasks]
       .filter(task => task.endDate)
       .map(task => ({
         ...task,
@@ -65,8 +69,6 @@ export default function TaskTimeline({ tasks, completedTasks }: Props) {
     const dates = allTasks.map(task => task.dueDate);
     const minDate = new Date(Math.min(...dates.map(d => d.getTime())));
     const maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
-    const today = new Date();
-    
     // Always stretch to include all tasks with minimal padding
     const padding = (maxDate.getTime() - minDate.getTime()) * 0.05; // 5% padding
     

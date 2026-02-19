@@ -17,9 +17,6 @@ npm run dev
 - `docs/screenshots/` – Reserved folder for app screenshots.
 
 ## Screenshots
-
-> Add screenshots into `docs/screenshots/` and replace the placeholders below.
-
 ![Todo Dashboard Screenshot](docs/screenshots/todo-dashboard.png)
 ![Timeline Screenshot](docs/screenshots/timeline-view.png)
 ![Hall of Quotes Screenshot](docs/screenshots/hall-of-quotes.png)
